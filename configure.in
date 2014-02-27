@@ -1,4 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
+
 AC_INIT(README.txt)
 AC_CONFIG_HEADER(include/SDL_config.h)
 AC_CONFIG_AUX_DIR(build-scripts)
@@ -56,6 +57,19 @@ AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_CHECK_TOOL(WINDRES, [windres], [:])
+
+AC_MSG_CHECKING(for emscripten compiler)
+emscripten_compiler=no
+AC_TRY_COMPILE([
+    #ifndef EMSCRIPTEN
+    #error "not an emscripten compiler"
+    #endif
+    ],[
+    ],[
+     host=javascript-web-emscripten
+     emscripten_compiler=yes
+    ])
+AC_MSG_RESULT($emscripten_compiler)
 
 dnl Make sure that srcdir is a full pathname
 case "$host" in
@@ -3067,6 +3081,24 @@ AC_HELP_STRING([--enable-render-d3d], [enable the Direct3D render driver [[defau
         if test x$enable_audio = xyes; then
             EXTRA_LDFLAGS="$EXTRA_LDFLAGS -Wl,-framework,CoreAudio -Wl,-framework,AudioToolbox -Wl,-framework,AudioUnit"
         fi
+        ;;
+    *-*-emscripten*)
+	ARCH=emscripten
+
+        CheckDLOPEN
+
+	AC_DEFINE(SDL_VIDEO_OPENGL_ES2, 1, [ ])
+	AC_DEFINE(SDL_VIDEO_RENDER_OGL_ES2, 1, [ ])
+
+	AC_DEFINE(SDL_FILESYSTEM_DUMMY, 1, [ ])
+
+	if test x$enable_video = xyes; then
+	    AC_DEFINE(SDL_VIDEO_DRIVER_EMSCRIPTEN, 1, [ ])
+	    SOURCES="$SOURCES $srcdir/src/video/emscripten/*.c"
+	    have_video=yes
+	    SUMMARY_video="${SUMMARY_video} emscripten"
+	fi
+
         ;;
     *)
         AC_MSG_ERROR([

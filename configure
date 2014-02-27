@@ -15621,6 +15621,35 @@ else
 fi
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for emscripten compiler" >&5
+$as_echo_n "checking for emscripten compiler... " >&6; }
+emscripten_compiler=no
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+    #ifndef EMSCRIPTEN
+    #error "not an emscripten compiler"
+    #endif
+
+int
+main ()
+{
+
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+
+     host=javascript-web-emscripten
+     emscripten_compiler=yes
+
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $emscripten_compiler" >&5
+$as_echo "$emscripten_compiler" >&6; }
+
 case "$host" in
     *-*-mingw32*)
         # Except on msys, where make can't handle full pathnames (bug 1972)
@@ -22513,6 +22542,17 @@ fi
     fi
 }
 
+CheckEmscripten()
+{
+    if test x$enable_video = xyes; then
+
+$as_echo "#define SDL_VIDEO_DRIVER_EMSCRIPTEN 1" >>confdefs.h
+
+        SOURCES="$SOURCES $srcdir/src/video/emscripten/*.c"
+        have_video=yes
+    fi
+}
+
 CheckRPATH()
 {
     # Check whether --enable-rpath was given.
@@ -23071,6 +23111,11 @@ $as_echo "#define SDL_TIMER_UNIX 1" >>confdefs.h
         if test x$enable_audio = xyes; then
             EXTRA_LDFLAGS="$EXTRA_LDFLAGS -Wl,-framework,CoreAudio -Wl,-framework,AudioToolbox -Wl,-framework,AudioUnit"
         fi
+        ;;
+    *-*-emscripten*)
+	ARCH=linux
+        CheckDLOPEN
+	CheckEmscripten
         ;;
     *)
         as_fn_error $? "
