@@ -1342,6 +1342,7 @@ X11_SetWindowGammaRamp(_THIS, SDL_Window * window, const Uint16 * ramp)
 void
 X11_SetWindowGrab(_THIS, SDL_Window * window, SDL_bool grabbed)
 {
+#if 0
     SDL_WindowData *data = (SDL_WindowData *) window->driverdata;
     Display *display = data->videodata->display;
     SDL_bool oldstyle_fullscreen;
@@ -1388,6 +1389,7 @@ X11_SetWindowGrab(_THIS, SDL_Window * window, SDL_bool grabbed)
         X11_XUngrabKeyboard(display, CurrentTime);
     }
     X11_XSync(display, False);
+#endif
 }
 
 void
