@@ -2623,6 +2623,68 @@ AC_HELP_STRING([--enable-rpath], [use an rpath when linking SDL [[default=yes]]]
 
 dnl Set up the configuration based on the host platform!
 case "$host" in
+    *-linux-android*)
+
+	ARCH=android
+
+	CheckDLOPEN
+	CheckPTHREAD
+
+        EXTRA_CFLAGS="$EXTRA_CFLAGS -DGL_GLEXT_PROTOTYPES"
+	EXTRA_LDFLAGS="$EXTRA_LDFLAGS -ldl -lGLESv1_CM -lGLESv2 -llog -landroid"
+        SDL_LIBS="-lSDL2-2.0 -ldl -lGLESv1_CM -lGLESv2 -llog -landroid"
+
+	AC_DEFINE(SDL_VIDEO_OPENGL_ES, 1, [ ])
+	AC_DEFINE(SDL_VIDEO_OPENGL_ES2, 1, [ ])
+	AC_DEFINE(SDL_VIDEO_OPENGL_EGL, 1, [ ])
+	AC_DEFINE(SDL_VIDEO_RENDER_OGL_ES, 1, [ ])
+	AC_DEFINE(SDL_VIDEO_RENDER_OGL_ES2, 1, [ ])
+
+	AC_DEFINE(SDL_FILESYSTEM_DUMMY, 1, [ ])
+
+	SOURCES="$SOURCES $srcdir/src/core/android/*.c"
+
+        # Set up files for the audio library
+	if test x$enable_audio = xyes; then
+	    AC_DEFINE(SDL_AUDIO_DRIVER_ANDROID, 1, [ ])
+	    SOURCES="$SOURCES $srcdir/src/audio/android/*.c"
+	    SUMMARY_audio="${SUMMARY_audio} android"
+	fi
+        # Set up files for the joystick library
+        if test x$enable_joystick = xyes; then
+	    AC_DEFINE(SDL_JOYSTICK_ANDROID, 1, [ ])
+	    SOURCES="$SOURCES $srcdir/src/joystick/android/*.c"
+	    have_joystick=yes
+	fi
+        # Set up files for the power library
+        if test x$enable_power = xyes; then
+	    AC_DEFINE(SDL_POWER_ANDROID, 1, [ ])
+	    SOURCES="$SOURCES $srcdir/src/power/android/*.c"
+	    have_power=yes
+	fi
+        # Set up files for the timer library
+        if test x$enable_timers = xyes; then
+            AC_DEFINE(SDL_TIMER_UNIX, 1, [ ])
+            SOURCES="$SOURCES $srcdir/src/timer/unix/*.c"
+            have_timers=yes
+        fi
+        # Set up files for the video library
+	if test x$enable_video = xyes; then
+	    AC_DEFINE(SDL_VIDEO_DRIVER_ANDROID, 1, [ ])
+	    SOURCES="$SOURCES $srcdir/src/video/android/*.c"
+	    have_video=yes
+	    SUMMARY_video="${SUMMARY_video} android"
+	fi
+        # Set up files for the thread library
+        if test x$enable_threads = xyes; then
+	    AC_DEFINE(SDL_THREAD_PTHREAD, 1, [ ])
+	    AC_DEFINE(SDL_THREAD_PTHREAD_RECURSIVE_MUTEX, 1, [ ])
+            SOURCES="$SOURCES $srcdir/src/thread/pthread/*.c"
+            have_threads=yes
+        fi
+
+        ;;
+
     *-*-linux*|*-*-uclinux*|*-*-gnu*|*-*-k*bsd*-gnu|*-*-bsdi*|*-*-freebsd*|*-*-dragonfly*|*-*-netbsd*|*-*-openbsd*|*-*-sysv5*|*-*-solaris*|*-*-hpux*|*-*-aix*|*-*-minix*)
         case "$host" in
             *-raspberry-linux*)
