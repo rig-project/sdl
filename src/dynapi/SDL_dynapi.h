@@ -49,6 +49,8 @@
 #define SDL_DYNAMIC_API 1
 #endif
 
+#define SDL_DYNAMIC_API 0
+
 #endif
 
 /* vi: set ts=4 sw=4 expandtab: */
