@@ -472,13 +472,20 @@ main(int argc, char *argv[])
     Uint32 then, now, frames;
     int status;
     shader_data *data;
+    char *fake_args[] = {
+        "testgles2",
+        "--windows",
+        "2",
+        NULL
+    };
+    argc = 2;
 
     /* Initialize parameters */
     fsaa = 0;
     accel = 0;
 
     /* Initialize test framework */
-    state = SDLTest_CommonCreateState(argv, SDL_INIT_VIDEO);
+    state = SDLTest_CommonCreateState(fake_args, SDL_INIT_VIDEO);
     if (!state) {
         return 1;
     }

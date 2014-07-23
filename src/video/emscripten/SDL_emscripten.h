@@ -38,4 +38,6 @@ int SDL2_Emscripten_SetWindowSize (int canvas_id, int width, int height);
 
 void *SDL2_Emscripten_GetProcAddress (const char *name);
 
+void int SDL2_Emscripten_AddInputListener (void);
+
 #endif
